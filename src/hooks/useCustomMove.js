@@ -51,7 +51,15 @@ const useCustomMove = () => {
         navigate({pathname: `../modify/${num}`, search: queryDefault});
     }
 
-    return {moveToList, moveToModify, page, size, refresh}
+    // 글을 누르면 읽기 화면으로 이동하는 기능
+    const moveToRead = (num) => {
+
+        console.log(queryDefault);
+
+        navigate({pathname: `../read/${num}`, search: queryDefault});
+    }
+
+    return {moveToList, moveToModify, moveToRead, page, size, refresh}
 }
 
 export default useCustomMove;
