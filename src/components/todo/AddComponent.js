@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { postAdd } from "../../api/todoApi";
+import ResultModal from "../common/ResultModal";
 
 const initState = {
     title: '',
@@ -11,6 +12,9 @@ const AddComponent = () => {
 
     const [todo, setTodo] = useState({...initState});
 
+    // result 유무에 따라 모달창을 보여준다
+    const [result, setResult] = useState(null);
+
     const handleChangeTodo = (e) => {
 
         todo[e.target.name] = e.target.value;
@@ -21,15 +25,30 @@ const AddComponent = () => {
     const handleClickAdd = () => {
 
         postAdd(todo).then(result=>{
-            console.log(result);
+            setResult(result.TNO);
             setTodo({...initState});
         }).catch(e=>{
             console.error(e);
         })
     }
 
+    const closeModal = () => {
+
+        setResult(null);
+    }
+
     return (
         <div className="border-2 bg-sky-200 mt-10 m-2 p-4">
+            
+            {/* 모달창 */}
+            {result ?
+                <ResultModal title={'Add Result'}
+                    content={`New ${result} Added`}
+                    callbackFn={closeModal} />
+            :
+                <></>
+            }
+
             <div className="flex justify-center">
                 <div className="relative mb-4 flex w-full flex-wrap items-stretch">
                     <div className="w-1/5 p-6 text-right font-bold">TITLE</div>
