@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { postAdd } from "../../api/todoApi";
 import ResultModal from "../common/ResultModal";
+import useCustomMove from "../../hooks/useCustomMove";
 
 const initState = {
     title: '',
@@ -15,11 +16,13 @@ const AddComponent = () => {
     // result 유무에 따라 모달창을 보여준다
     const [result, setResult] = useState(null);
 
+    const {moveToList} = useCustomMove();
+
     const handleChangeTodo = (e) => {
 
         todo[e.target.name] = e.target.value;
 
-        setTodo({...todo})
+        setTodo({...todo});
     }
 
     const handleClickAdd = () => {
@@ -35,6 +38,7 @@ const AddComponent = () => {
     const closeModal = () => {
 
         setResult(null);
+        moveToList();
     }
 
     return (
