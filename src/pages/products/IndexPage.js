@@ -26,7 +26,7 @@ const IndexPage = () => {
                     LIST
                 </div>
                 <div className="text-xl m-1 p-2 w-20 font-extrabold text-center underline"
-                    onClick={handleClickList}>
+                    onClick={handleClickAdd}>
                     ADD
                 </div>    
             </div>
