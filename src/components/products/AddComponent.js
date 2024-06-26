@@ -2,6 +2,7 @@ import { useRef, useState } from "react";
 import { postAdd } from "../../api/productsApi";
 import FetchingModal from "../common/FetchingModal";
 import ResultModal from "../common/ResultModal";
+import useCustomMove from "../../hooks/useCustomMove";
 
 const initState = {
     pname: '',
@@ -17,7 +18,11 @@ const AddComponent = () => {
 
     // fetching을 하고있으면 모달창on 안하고있으면 모달창off
     const [fetching, setFetching] = useState(false);
+
+    // result는 결과 모달창을 위한 상태, 위에 코드는 패치모달창임
     const [result , setResult] = useState(null);
+
+    const {moveToList} = useCustomMove();
 
 
     const handleChangeProduct = (e) => {
@@ -51,6 +56,8 @@ const AddComponent = () => {
     const closeModal = () => {
 
         setResult(null);
+
+        moveToList({page: 1});
     }
 
     return (
