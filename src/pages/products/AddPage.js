@@ -1,3 +1,5 @@
+import AddComponent from "../../components/products/AddComponent";
+
 const AddPage = () => {
 
     return (
@@ -5,6 +7,9 @@ const AddPage = () => {
             <div className="text-3xl font-extrabold">
                 Products Add Page
             </div>
+
+            <AddComponent />
+            
         </div>
     );
 }
