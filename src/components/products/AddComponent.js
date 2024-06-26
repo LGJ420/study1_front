@@ -1,6 +1,7 @@
 import { useRef, useState } from "react";
 import { postAdd } from "../../api/productsApi";
 import FetchingModal from "../common/FetchingModal";
+import ResultModal from "../common/ResultModal";
 
 const initState = {
     pname: '',
@@ -16,6 +17,7 @@ const AddComponent = () => {
 
     // fetching을 하고있으면 모달창on 안하고있으면 모달창off
     const [fetching, setFetching] = useState(false);
+    const [result , setResult] = useState(null);
 
 
     const handleChangeProduct = (e) => {
@@ -42,13 +44,29 @@ const AddComponent = () => {
         setFetching(true);
         postAdd(formData).then(data=>{
             setFetching(false);
+            setResult(data.RESULT);
         });
+    }
+
+    const closeModal = () => {
+
+        setResult(null);
     }
 
     return (
         <div className="border-2 bg-sky-200 mt-10 m-2 p-4">
 
             {fetching ? <FetchingModal /> : <></>}
+
+            {result ?
+                <ResultModal
+                    title={'Product Add Result'}
+                    content={`${result}번 등록 완료`}
+                    callbackFn={closeModal} />
+                :
+                <></>
+            }
+
             <div className="flex justify-center">
                 <div className="relative mb-4 flex w-full flex-wrap items-stretch">
                     <div className="w-1/5 p-6 text-right font-bold">Product Name</div>
