@@ -19,7 +19,19 @@ const AddComponent = () => {
 
     const handleClickAdd = (e) => {
 
-        console.log(product);
+        const files = uploadRef.current.files;
+
+        const formData = new FormData();
+
+        for (let i = 0; i < files.length; i++) {
+            formData.append("files", files[i]);
+        }
+
+        formData.append("pname", product.pname);
+        formData.append("pdesc", product.pdesc);
+        formData.append("price", product.price);
+
+        console.log(formData);
     }
 
     return (
