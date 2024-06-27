@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import { API_SERVER_HOST } from "../../api/todoApi";
 import FetchingModal from "../common/FetchingModal";
 import { getOne, putOne } from "../../api/productsApi";
+import useCustomMove from "../../hooks/useCustomMove";
+import ResultModal from "../common/ResultModal";
 
 const initState = {
     pno: 0,
@@ -18,9 +20,15 @@ const ModifyComponent = ({pno}) => {
 
     const [product, setProduct] = useState(initState);
 
+    //패치모달창
     const [fetching, setFetching] = useState(false);
 
     const uploadRef = useRef();
+
+    //결과모달창
+    const [result, setResult] = useState(null);
+
+    const {moveToRead, moveToList} = useCustomMove();
 
     useEffect(()=>{
 
@@ -66,13 +74,34 @@ const ModifyComponent = ({pno}) => {
             formData.append("uploadFileNames", product.uploadFileNames[i]);
         }
 
-        putOne(pno, formData);
+        setFetching(true);
+        putOne(pno, formData).then(data=>{
+            setResult('Modified');
+            setFetching(false);
+        });
+    }
+
+    const closeModal = () => {
+
+        if(result === 'Modified'){
+            moveToRead(pno);
+        }
+
+        setResult(null);
     }
 
     return (
         <div className="border-2 border-sky-200 mt-10 m-2 p-4">
 
             {fetching ? <FetchingModal /> : <></>}
+
+            {result ?
+                <ResultModal title={`${result}`}
+                    content={'정상적으로 처리되었습니다.'}
+                    callbackFn={closeModal} />
+                :
+                <></>
+            }
 
             <div className="flex justify-center">
                 <div className="relative mb-4 flex w-full flex-wrap items-stretch">
