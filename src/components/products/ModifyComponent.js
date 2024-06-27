@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { API_SERVER_HOST } from "../../api/todoApi";
 import FetchingModal from "../common/FetchingModal";
-import { getOne, putOne } from "../../api/productsApi";
+import { deleteOne, getOne, putOne } from "../../api/productsApi";
 import useCustomMove from "../../hooks/useCustomMove";
 import ResultModal from "../common/ResultModal";
 
@@ -80,11 +80,23 @@ const ModifyComponent = ({pno}) => {
             setFetching(false);
         });
     }
+    
+    const handleClickDelete = () => {
+
+        setFetching(true);
+        deleteOne(pno).then(data=>{
+            setResult("Deleted");
+            setFetching(false);
+        })
+    }
 
     const closeModal = () => {
 
         if(result === 'Modified'){
             moveToRead(pno);
+        }
+        else if(result === 'Deleted'){
+            moveToList({page:1})
         }
 
         setResult(null);
@@ -171,7 +183,8 @@ const ModifyComponent = ({pno}) => {
             </div>
             
             <div className="flex justify-end p-4">
-                <button type="button" className="rounded p-4 m-2 text-xl w-32 text-white bg-red-500">
+                <button type="button" className="rounded p-4 m-2 text-xl w-32 text-white bg-red-500"
+                    onClick={handleClickDelete}>
                     Delete
                 </button>
                 <button type="button" className="inline-block rounded p-4 m-2 text-xl w-32 text-white bg-orange-500"
