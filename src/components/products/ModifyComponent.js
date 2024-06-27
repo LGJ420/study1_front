@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { API_SERVER_HOST } from "../../api/todoApi";
 import FetchingModal from "../common/FetchingModal";
-import { getOne } from "../../api/productsApi";
+import { getOne, putOne } from "../../api/productsApi";
 
 const initState = {
     pno: 0,
@@ -45,6 +45,28 @@ const ModifyComponent = ({pno}) => {
         product.uploadFileNames = resultFileNames;
 
         setProduct({...product});
+    }
+
+    const handleClickModify = () => {
+
+        const files = uploadRef.current.files;
+
+        const formData = new FormData();
+
+        for (let i = 0; i < files.length; i++) {
+            formData.append("files", files[i]);
+        }
+
+        formData.append("pname", product.pname);
+        formData.append("pdesc", product.pdesc);
+        formData.append("price", product.price);
+        formData.append("delFlag", product.delFlag);
+
+        for (let i = 0; i < product.uploadFileNames.length; i++) {
+            formData.append("uploadFileNames", product.uploadFileNames[i]);
+        }
+
+        putOne(pno, formData);
     }
 
     return (
@@ -119,6 +141,19 @@ const ModifyComponent = ({pno}) => {
                 </div>
             </div>
             
+            <div className="flex justify-end p-4">
+                <button type="button" className="rounded p-4 m-2 text-xl w-32 text-white bg-red-500">
+                    Delete
+                </button>
+                <button type="button" className="inline-block rounded p-4 m-2 text-xl w-32 text-white bg-orange-500"
+                    onClick={handleClickModify}>
+                    Modify
+                </button>
+                <button type="button" className="rounded p-4 m-2 text-xl w-32 text-white bg-blue-500">
+                    List
+                </button>
+            </div>
+
         </div>
     );
 }
