@@ -40,6 +40,11 @@ const ModifyComponent = ({pno}) => {
 
     const deleteOldImages = (imageName) => {
 
+        const resultFileNames = product.uploadFileNames.filter(fileName=>fileName!==imageName);
+
+        product.uploadFileNames = resultFileNames;
+
+        setProduct({...product});
     }
 
     return (
@@ -105,7 +110,8 @@ const ModifyComponent = ({pno}) => {
                         {product.uploadFileNames.map((imgFile, i)=>
                             <div className="flex justify-center flex-col w-1/3 m-1 align-baseline"
                                 key={i}>
-                                <button className="bg-blue-500 text-3xl text-white">DELETE</button>
+                                <button className="bg-blue-500 text-3xl text-white"
+                                    onClick={()=>deleteOldImages(imgFile)}>DELETE</button>
                                 <img alt="img" src={`${host}/api/products/view/s_${imgFile}`}/>
                             </div>
                         )}
