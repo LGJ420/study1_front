@@ -22,6 +22,14 @@ const loginSlice = createSlice({
     reducers: {
         login: (state, action) => {
             console.log("login.....");
+
+            /**
+             * 두번째 파라미터 action으로 payload라는 속성을 이용해서
+             * 컴포넌트가 전달하는 데이터를 확인할 수 있다
+             */
+            const data = action.payload;
+
+            return {email: data.email};
         },
         logout: (state, action) => {
             console.log("logout....");
