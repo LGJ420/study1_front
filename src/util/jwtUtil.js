@@ -1,9 +1,25 @@
 //Axios의 요청/응답 시에 동작할 함수들을 정의
 
 import axios from "axios"
-import { getCookie } from "./cookieUtil";
+import { getCookie, setCookie } from "./cookieUtil";
+import { API_SERVER_HOST } from "../api/todoApi";
 
 const jwtAxios = axios.create();
+
+const refreshJWT = async (accessToken, refreshToken) => {
+
+    const host = API_SERVER_HOST;
+
+    const header = {header: {"Authorization": `Bearer ${accessToken}`}};
+
+    //POST방식이 낫긴하지만 예제에서는 눈에 보이도록 GET방식을 이용했음
+    const res = await axios.get(`${host}/api/member/refresh?refreshToken=${refreshToken}`, header);
+
+    console.log("----------------------");
+    console.log(res.data);
+
+    return res.data;
+}
 
 const beforeReq = (config) => {
 
@@ -40,6 +56,31 @@ const requestFail = (err) => {
 const beforeRes = async (res) => {
 
     console.log("before return response.............")
+
+    const data = res.data;
+
+    if(data && data.error === 'ERROR_ACCESS_TOKEN'){
+
+        const memberCookieValue = getCookie("member");
+
+        const result = await refreshJWT(memberCookieValue.accessToken,
+            memberCookieValue.refreshToken);
+
+        console.log("refreshJWT RESULT", result);
+
+        memberCookieValue.accessToken = result.accessToken;
+        memberCookieValue.refreshToken = result.refreshToken;
+
+        setCookie("member", JSON.stringify(memberCookieValue), 1);
+
+
+        // 원래 요청에 새로받은 accessToken을 넣어서 다시 요청
+        const originalRequest = res.config;
+
+        originalRequest.headers.Authorization = `Bearer ${result.accessToken}`;
+
+        return await axios(originalRequest);
+    }
 
     return res;
 }
