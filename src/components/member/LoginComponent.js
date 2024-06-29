@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useDispatch } from "react-redux";
-import { login } from "../../slices/loginSlice";
+import { login, loginPostAsync } from "../../slices/loginSlice";
 
 const initState = {
     email: '',
@@ -21,7 +21,8 @@ const LoginComponent = () => {
 
     const handleClickLogin = (e) => {
 
-        dispatch(login(loginParam));
+        //dispatch(login(loginParam)); //동기 호출
+        dispatch(loginPostAsync(loginParam)); //비동기 호출
     }
 
     return (
