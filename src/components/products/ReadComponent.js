@@ -3,6 +3,8 @@ import useCustomMove from "../../hooks/useCustomMove";
 import { getOne } from "../../api/productsApi";
 import FetchingModal from "../common/FetchingModal";
 import { useQuery } from "@tanstack/react-query";
+import useCustomLogin from "../../hooks/useCustomLogin";
+import useCustomCart from "../../hooks/useCustomCart";
 
 const initState = {
     pno: 0,
@@ -18,6 +20,10 @@ const ReadComponent = ({pno}) => {
 
     const {moveToList, moveToModify} = useCustomMove();
 
+    const {loginState} = useCustomLogin();
+
+    const {cartItems, changeCart} = useCustomCart();
+
     /**
      * useQuery(쿼리 키, 쿼리 함수, 옵션)
      * React Query 버전 5 이상에서는
@@ -27,7 +33,7 @@ const ReadComponent = ({pno}) => {
         queryKey: ['products', pno],
         queryFn: () => getOne(pno),
         options: {
-            staleTime: 1000 * 10, // stale=신선하지않은, 10초
+            staleTime: 1000 * 10 * 60, // stale=신선하지않은, 10분
             retry: 1
         }
     });
@@ -35,6 +41,18 @@ const ReadComponent = ({pno}) => {
 
     const handleClickAddCart = () => {
 
+        let qty = 1;
+
+        const addedItem = cartItems.filter(item=>item.pno===parseInt(pno))[0];
+
+        if(addedItem){
+            if(window.confirm("이미 추가된 상품입니다. 추가하시겠습니까?")===false){
+                return;
+            }
+            qty = addedItem.qty + 1;
+        }
+
+        changeCart({email: loginState.email, pno: pno, qty: qty});
     }
 
 
