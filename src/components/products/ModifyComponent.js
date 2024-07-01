@@ -4,6 +4,7 @@ import FetchingModal from "../common/FetchingModal";
 import { deleteOne, getOne, putOne } from "../../api/productsApi";
 import useCustomMove from "../../hooks/useCustomMove";
 import ResultModal from "../common/ResultModal";
+import { useQuery } from "@tanstack/react-query";
 
 const initState = {
     pno: 0,
@@ -18,26 +19,26 @@ const host = API_SERVER_HOST;
 
 const ModifyComponent = ({pno}) => {
 
+    const {moveToRead, moveToList} = useCustomMove();
     const [product, setProduct] = useState(initState);
-
-    //패치모달창
-    const [fetching, setFetching] = useState(false);
 
     const uploadRef = useRef();
 
-    //결과모달창
-    const [result, setResult] = useState(null);
-
-    const {moveToRead, moveToList} = useCustomMove();
+    const query = useQuery({
+        queryKey: ['products', pno],
+        queryFn: ()=>getOne(pno),
+        options: {
+            staleTime: Infinity
+        }
+    });
 
     useEffect(()=>{
 
-        setFetching(true);
-        getOne(pno).then(data=>{
-            setProduct(data);
-            setFetching(false);
-        })
-    }, [pno]);
+        if(query.isSuccess){
+            setProduct(query.data);
+        }
+
+    }, [pno, query.data, query.isSuccess]);    
 
     const handleChangeProduct = (e) => {
 
@@ -73,47 +74,21 @@ const ModifyComponent = ({pno}) => {
         for (let i = 0; i < product.uploadFileNames.length; i++) {
             formData.append("uploadFileNames", product.uploadFileNames[i]);
         }
-
-        setFetching(true);
-        putOne(pno, formData).then(data=>{
-            setResult('Modified');
-            setFetching(false);
-        });
+        
     }
     
     const handleClickDelete = () => {
 
-        setFetching(true);
-        deleteOne(pno).then(data=>{
-            setResult("Deleted");
-            setFetching(false);
-        })
     }
 
     const closeModal = () => {
 
-        if(result === 'Modified'){
-            moveToRead(pno);
-        }
-        else if(result === 'Deleted'){
-            moveToList({page:1})
-        }
-
-        setResult(null);
     }
 
     return (
         <div className="border-2 border-sky-200 mt-10 m-2 p-4">
 
-            {fetching ? <FetchingModal /> : <></>}
-
-            {result ?
-                <ResultModal title={`${result}`}
-                    content={'정상적으로 처리되었습니다.'}
-                    callbackFn={closeModal} />
-                :
-                <></>
-            }
+            {query.isFetching ? <FetchingModal /> : <></>}
 
             <div className="flex justify-center">
                 <div className="relative mb-4 flex w-full flex-wrap items-stretch">
