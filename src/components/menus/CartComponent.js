@@ -2,20 +2,19 @@ import { useDispatch, useSelector } from "react-redux";
 import useCustomLogin from "../../hooks/useCustomLogin";
 import { getCartItemsAsync } from "../../slices/cartSlice"
 import { useEffect } from "react";
+import useCustomCart from "../../hooks/useCustomCart";
 
 const CartComponent = () => {
 
     const {isLogin, loginState} = useCustomLogin();
 
-    const dispatch = useDispatch();
-
-    const cartItems = useSelector(state => state.cartSlice);
+    const {refreshCart, cartItems} = useCustomCart();
 
     useEffect(()=>{
 
         if(isLogin){
 
-            dispatch(getCartItemsAsync());
+            refreshCart();
         }
 
     },[isLogin]);
