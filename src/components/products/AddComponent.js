@@ -3,7 +3,7 @@ import { postAdd } from "../../api/productsApi";
 import FetchingModal from "../common/FetchingModal";
 import ResultModal from "../common/ResultModal";
 import useCustomMove from "../../hooks/useCustomMove";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 const initState = {
     pname: '',
@@ -24,7 +24,9 @@ const AddComponent = () => {
     }
 
     //리액트 쿼리
-    const addMutation = useMutation((product)=>postAdd(product));
+    const addMutation = useMutation({
+        mutationFn: (product)=>postAdd(product)
+    });
 
     const handleClickAdd = (e) => {
 
@@ -43,13 +45,28 @@ const AddComponent = () => {
     }
 
 
+    const queryClient = useQueryClient();
+
     const closeModal = () => {
+
+        queryClient.invalidateQueries("products/list");
 
         moveToList({page: 1});
     }
 
     return (
         <div className="border-2 bg-sky-200 mt-10 m-2 p-4">
+
+            {addMutation.isLoading ? <FetchingModal /> : <></>}
+
+            {addMutation.isSuccess ?
+                <ResultModal
+                    title={'Product Add Result'}
+                    content={`${addMutation.data.RESULT}번 등록 완료`}
+                    callbackFn={closeModal} />
+                :
+                <></>
+            }
 
             <div className="flex justify-center">
                 <div className="relative mb-4 flex w-full flex-wrap items-stretch">
