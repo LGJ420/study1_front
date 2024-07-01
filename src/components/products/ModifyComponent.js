@@ -56,6 +56,11 @@ const ModifyComponent = ({pno}) => {
         setProduct({...product});
     }
 
+
+    const modMutation = useMutation({
+        mutationFn: (product)=>putOne(pno, product)
+    })
+
     const handleClickModify = () => {
 
         const files = uploadRef.current.files;
@@ -75,6 +80,7 @@ const ModifyComponent = ({pno}) => {
             formData.append("uploadFileNames", product.uploadFileNames[i]);
         }
         
+        modMutation.mutate(formData);
     }
 
 
@@ -96,6 +102,12 @@ const ModifyComponent = ({pno}) => {
             queryClient.invalidateQueries(['products/list']);
             moveToList();
         }
+
+        if(modMutation.isSuccess){
+            queryClient.invalidateQueries(['products', pno]);
+            queryClient.invalidateQueries(['products/list']);
+            moveToRead(pno);
+        }
     }
 
     return (
@@ -103,9 +115,9 @@ const ModifyComponent = ({pno}) => {
 
             {query.isFetching ? <FetchingModal /> : <></>}
 
-            {delMutation.isSuccess ?
+            {delMutation.isSuccess || modMutation.isSuccess ?
                 <ResultModal
-                    title={'Product Delete Result'}
+                    title={'처리 결과'}
                     content={'정상적으로 처리되었습니다.'}
                     callbackFn={closeModal} />
                 :
