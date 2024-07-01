@@ -12,7 +12,7 @@ const useCustomCart = () => {
         dispatch(getCartItemsAsync());
     };
 
-    const changeCart = () => {
+    const changeCart = (param) => {
 
         dispatch(postChangeCartAsync(param));
     };
