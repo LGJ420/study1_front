@@ -5,6 +5,7 @@ import FetchingModal from "../common/FetchingModal";
 import { API_SERVER_HOST } from "../../api/todoApi";
 import PageComponent from "../common/PageComponent";
 import useCustomLogin from "../../hooks/useCustomLogin";
+import { useQuery } from "@tanstack/react-query";
 
 const initState = {
     dtoList: [],
@@ -23,30 +24,26 @@ const host = API_SERVER_HOST;
 
 const ListComponent = () => {
 
-    const { exceptionHandle } = useCustomLogin();
+    const {moveToLoginReturn} = useCustomLogin();
 
     const {page, size, refresh, moveToList, moveToRead} = useCustomMove();
 
-    const [serverData, setServerData] = useState(initState);
+    const {isFetching, data, error, isError} = useQuery({
+        queryKey: ['products/list', {page, size}],
+        queryFn: ()=>getList({page, size})
+    });
 
-    // fetch 모달창
-    const [fetching, setFetching] = useState(false);
+    if(isError) {
+        console.log(error);
+        return moveToLoginReturn();
+    }
 
-    useEffect(()=>{
-
-        setFetching(true);
-
-        getList({page, size}).then(data=>{
-            console.log(data);
-            setServerData(data);
-            setFetching(false);
-        }).catch(err=>exceptionHandle(err));
-    }, [page, size, refresh]);
+    const serverData = data || initState;
 
     return (
         <div className="border-2 border-blue-100 mt-10 mr-2 ml-2">
             
-            {fetching ? <FetchingModal /> : <></>}
+            {isFetching ? <FetchingModal /> : <></>}
 
             <div className="flex flex-wrap mx-auto p-6">
 

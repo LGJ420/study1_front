@@ -1,10 +1,7 @@
-import { useEffect, useState } from "react";
 import { API_SERVER_HOST } from "../../api/todoApi"
 import useCustomMove from "../../hooks/useCustomMove";
 import { getOne } from "../../api/productsApi";
 import FetchingModal from "../common/FetchingModal";
-import useCustomCart from "../../hooks/useCustomCart";
-import useCustomLogin from "../../hooks/useCustomLogin";
 import { useQuery } from "@tanstack/react-query";
 
 const initState = {
