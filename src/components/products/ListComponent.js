@@ -5,7 +5,7 @@ import FetchingModal from "../common/FetchingModal";
 import { API_SERVER_HOST } from "../../api/todoApi";
 import PageComponent from "../common/PageComponent";
 import useCustomLogin from "../../hooks/useCustomLogin";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 const initState = {
     dtoList: [],
@@ -32,6 +32,22 @@ const ListComponent = () => {
         queryKey: ['products/list', {page, size}],
         queryFn: ()=>getList({page, size})
     });
+
+    const queryClient = useQueryClient();
+
+    const handleClickPage = (pageParam) => {
+
+        if(pageParam.page === parseInt(page)){
+
+            /**
+             * invalidateQueries()는 해당키로 시작하는 결과를 모두 무효화시킴
+             * 똑같은 페이지를 반복 호출하기 위해서 무효화
+             */
+            queryClient.invalidateQueries("products/list");
+        }
+
+        moveToList(pageParam);
+    }
 
     if(isError) {
         console.log(error);
@@ -76,7 +92,7 @@ const ListComponent = () => {
 
             </div>
             
-            <PageComponent serverData={serverData} movePage={moveToList} />
+            <PageComponent serverData={serverData} movePage={handleClickPage} />
 
         </div>
     );
