@@ -1,14 +1,9 @@
-import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import useCustomLogin from "../../hooks/useCustomLogin";
 
 const BasicMenu = () => {
 
-    /**
-     * 로그인 상황을 useSelector가 감지
-     * 파라미터에는 함수를 지정, 함수를 이용해 상태를 전달
-     * "loginSlice" 라고 이름지어 놨으니 그것을 사용
-     */
-    const loginState = useSelector(state => state.loginSlice);
+    const {loginState} = useCustomLogin();
 
     return (
         <nav id='navbar' className="flex bg-blue-300">
