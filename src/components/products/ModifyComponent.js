@@ -4,7 +4,7 @@ import FetchingModal from "../common/FetchingModal";
 import { deleteOne, getOne, putOne } from "../../api/productsApi";
 import useCustomMove from "../../hooks/useCustomMove";
 import ResultModal from "../common/ResultModal";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 const initState = {
     pno: 0,
@@ -76,19 +76,41 @@ const ModifyComponent = ({pno}) => {
         }
         
     }
+
+
+    const delMutation = useMutation({
+        mutationFn: (pno)=>deleteOne(pno)
+    });
+
+    const queryClient = useQueryClient();
     
     const handleClickDelete = () => {
 
+        delMutation.mutate(pno);
     }
 
     const closeModal = () => {
 
+        if(delMutation.isSuccess){
+            queryClient.invalidateQueries(['products', pno]);
+            queryClient.invalidateQueries(['products/list']);
+            moveToList();
+        }
     }
 
     return (
         <div className="border-2 border-sky-200 mt-10 m-2 p-4">
 
             {query.isFetching ? <FetchingModal /> : <></>}
+
+            {delMutation.isSuccess ?
+                <ResultModal
+                    title={'Product Delete Result'}
+                    content={'정상적으로 처리되었습니다.'}
+                    callbackFn={closeModal} />
+                :
+                <></>
+            }
 
             <div className="flex justify-center">
                 <div className="relative mb-4 flex w-full flex-wrap items-stretch">
