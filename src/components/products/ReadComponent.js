@@ -5,6 +5,7 @@ import { getOne } from "../../api/productsApi";
 import FetchingModal from "../common/FetchingModal";
 import useCustomCart from "../../hooks/useCustomCart";
 import useCustomLogin from "../../hooks/useCustomLogin";
+import { useQuery } from "@tanstack/react-query";
 
 const initState = {
     pno: 0,
@@ -18,45 +19,35 @@ const host = API_SERVER_HOST;
 
 const ReadComponent = ({pno}) => {
 
-    const [product, setProduct] = useState(initState);
-
     const {moveToList, moveToModify} = useCustomMove();
 
-    const [fetching, setFetching] = useState(false);
+    /**
+     * useQuery(쿼리 키, 쿼리 함수, 옵션)
+     * React Query 버전 5 이상에서는
+     * useQuery의 매개변수를 하나의 객체로 전달해야 함
+     */
+    const {isFetching, data} = useQuery({
+        queryKey: ['products', pno],
+        queryFn: () => getOne(pno),
+        options: {
+            staleTime: 1000 * 10, // stale=신선하지않은, 10초
+            retry: 1
+        }
+    });
 
-    const {changeCart, cartItems} = useCustomCart();
-
-    const {loginState} = useCustomLogin();
 
     const handleClickAddCart = () => {
 
-        let qty = 1;
-
-        const addedItem = cartItems.filter(item=>item.pno===parseInt(pno))[0];
-
-        if(addedItem){
-            if(window.confirm("이미 추가된 상품입니다. 추가하시겠습니까?")===false){
-                return;
-            }
-            qty = addedItem.qty + 1;
-        }
-
-        changeCart({email: loginState.email, pno: pno, qty: qty});
     }
 
-    useEffect(()=>{
 
-        setFetching(true);
-        getOne(pno).then(data=>{
-            setProduct(data);
-            setFetching(false);
-        })
-    }, [pno]);
+    const product = data || initState;
+
 
     return (
         <div className="border-2 border-sky-200 mt-10 m-2 p-4">
 
-            {fetching ? <FetchingModal /> : <></>}
+            {isFetching ? <FetchingModal /> : <></>}
 
             <div className="flex justify-center mt-10">
                 <div className="relative mb-4 flex w-full flex-wrap items-stretch">
