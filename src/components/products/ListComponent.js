@@ -29,22 +29,27 @@ const ListComponent = () => {
     const {page, size, refresh, moveToList, moveToRead} = useCustomMove();
 
     const {isFetching, data, error, isError} = useQuery({
-        queryKey: ['products/list', {page, size}],
-        queryFn: ()=>getList({page, size})
+        queryKey: ['products/list', {page, size, refresh}],
+        queryFn: ()=>getList({page, size}),
+        options: {
+            staleTime: 1000 * 5 // 5초
+        }
     });
 
-    const queryClient = useQueryClient();
+    //불필요
+    //const queryClient = useQueryClient();
 
     const handleClickPage = (pageParam) => {
 
-        if(pageParam.page === parseInt(page)){
+        //불필요
+        //if(pageParam.page === parseInt(page)){
 
             /**
              * invalidateQueries()는 해당키로 시작하는 결과를 모두 무효화시킴
              * 똑같은 페이지를 반복 호출하기 위해서 무효화
              */
-            queryClient.invalidateQueries("products/list");
-        }
+        //    queryClient.invalidateQueries("products/list");
+        //}
 
         moveToList(pageParam);
     }
